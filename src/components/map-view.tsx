@@ -108,7 +108,14 @@ export function PropertyMap({ markers, user }: { markers: MarkerData[]; user: Us
             {fullScreen ? "Exit full screen" : "Enlarge map"}
           </button>
         </div>
-        <MapContainer center={center} zoom={11} maxZoom={maxZoom} className={fullScreen ? "h-[calc(100vh-61px)] w-full" : "h-[68vh] min-h-[520px] w-full"} scrollWheelZoom={false}>
+        <MapContainer
+          key={fullScreen ? "map-fullscreen" : "map-standard"}
+          center={center}
+          zoom={11}
+          maxZoom={maxZoom}
+          className={fullScreen ? "h-[calc(100vh-61px)] w-full" : "h-[68vh] min-h-[520px] w-full"}
+          scrollWheelZoom={false}
+        >
           <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           <Recenter center={center} fullScreen={fullScreen} />
           {visibleMarkers.map(({ property, incidents }) => (
@@ -146,11 +153,20 @@ export function PropertyMap({ markers, user }: { markers: MarkerData[]; user: Us
 function Recenter({ center, fullScreen }: { center: [number, number]; fullScreen: boolean }) {
   const map = useMap();
   useEffect(() => {
-    const timer = window.setTimeout(() => {
+    const redraw = () => {
       map.invalidateSize();
       map.setView(center, map.getZoom(), { animate: false });
-    }, 80);
-    return () => window.clearTimeout(timer);
+    };
+    const frame = window.requestAnimationFrame(redraw);
+    const timers = [80, 220, 520].map((delay) => window.setTimeout(redraw, delay));
+    const observer = new ResizeObserver(redraw);
+    observer.observe(map.getContainer());
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      timers.forEach((timer) => window.clearTimeout(timer));
+      observer.disconnect();
+    };
   }, [center, fullScreen, map]);
   return null;
 }
