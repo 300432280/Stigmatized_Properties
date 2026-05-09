@@ -1,9 +1,14 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/shell";
 import { Field, inputClass } from "@/components/ui";
 import { signupAction } from "@/lib/actions";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const user = await getCurrentUser();
+  if (user) redirect(user.role === "admin" || user.role === "researcher" ? "/admin" : "/map");
+
   const query = await searchParams;
   return (
     <AppShell>
@@ -31,6 +36,12 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
             </label>
             <button className="h-11 rounded bg-brass font-semibold text-ink">Create account</button>
           </div>
+          <p className="mt-5 text-sm text-vellum/62">
+            Already have an account?{" "}
+            <Link className="text-brass" href="/login">
+              Sign in
+            </Link>
+          </p>
         </form>
       </main>
     </AppShell>
