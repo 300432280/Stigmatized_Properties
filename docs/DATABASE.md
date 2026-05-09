@@ -7,6 +7,7 @@ Property Chronicle currently runs with a local JSON store so product review can 
 - Prisma is installed and pinned to v6 for the standard `DATABASE_URL` workflow.
 - Schema lives at `prisma/schema.prisma`.
 - Seed script lives at `prisma/seed.ts`.
+- Public-source research batch scripts live under `prisma/`, starting with `prisma/add-east-toronto-records.ts`.
 - The app can now read/write through Prisma when `DATABASE_URL` is present.
 - Without `DATABASE_URL`, the app falls back to the local JSON store for design/product review.
 
@@ -20,6 +21,8 @@ Property Chronicle currently runs with a local JSON store so product review can 
 The current Prisma adapter preserves the existing MVP store API by reading the current database state into the app's store shape, applying the existing mutation, then writing the resulting store back to Postgres.
 
 This is acceptable for early MVP/admin testing, but it is not the final high-concurrency production persistence pattern. After product workflows settle, replace full-store rewrites with targeted Prisma operations for imports, approvals, submissions, reports, saves, and audit logs.
+
+CSV is not the primary product data path. It is an admin convenience for bulk review. The main data path should be public-source research ingestion: scripts now, then monitored source pipelines later, with every record tied to at least one source URL and a neutral summary.
 
 ## Environment
 
@@ -49,6 +52,12 @@ Seed development records:
 
 ```powershell
 npm.cmd run db:seed
+```
+
+Add the first East Toronto public-source batch:
+
+```powershell
+npm.cmd run db:add-east-toronto
 ```
 
 Build app:
