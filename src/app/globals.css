@@ -1,0 +1,390 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  color-scheme: dark;
+  background: #0f1117;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    radial-gradient(circle at 18% 4%, rgba(159, 40, 31, 0.09), transparent 32rem),
+    linear-gradient(135deg, #111116 0%, #1b1b20 52%, #0b0b0e 100%);
+  background-size: 64px 64px, 64px 64px, auto, auto;
+  color: #efe7d2;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  opacity: 0.085;
+  background:
+    repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,0.48) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(12deg, transparent 0 18px, rgba(255,255,255,0.18) 19px, transparent 20px);
+  mix-blend-mode: overlay;
+}
+
+body::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background:
+    radial-gradient(circle at 84% 8%, rgba(231, 223, 207, 0.045), transparent 18rem),
+    linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.22));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.leaflet-container {
+  background: #151821;
+  font: inherit;
+}
+
+.leaflet-tile {
+  filter: grayscale(0.36) contrast(1.08) brightness(0.9) sepia(0.06) saturate(0.78);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border-radius: 0;
+  border: 1px solid rgba(231, 223, 207, 0.78);
+  background: #14100e;
+  color: #e7dfcf;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.42);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: #e7dfcf;
+  font-size: 18px;
+  padding: 7px 7px 0 0;
+}
+
+.leaflet-control-zoom a {
+  border-radius: 0 !important;
+  background: #e7dfcf !important;
+  color: #14100e !important;
+}
+
+.archive-border {
+  border: 1px solid rgba(181, 154, 84, 0.28);
+}
+
+.paper-panel {
+  background:
+    linear-gradient(135deg, rgba(231, 223, 207, 0.08), rgba(231, 223, 207, 0.025)),
+    linear-gradient(90deg, rgba(159, 40, 31, 0.06), transparent 38%);
+  border: 1px solid rgba(181, 154, 84, 0.25);
+  border-radius: 2px;
+  box-shadow: 12px 14px 0 rgba(0, 0, 0, 0.18);
+}
+
+.subtle-grid {
+  background-image:
+    linear-gradient(rgba(231, 223, 207, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(231, 223, 207, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.poster-block {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(159, 40, 31, 0.88) 0 28%, transparent 28% 100%),
+    linear-gradient(90deg, rgba(181, 154, 84, 0.18), rgba(231, 223, 207, 0.035)),
+    #17171c;
+  border: 1px solid rgba(231, 223, 207, 0.14);
+}
+
+.poster-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0 68%, rgba(231, 223, 207, 0.12) 68% 70%, transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 5px);
+  opacity: 0.7;
+}
+
+.hard-shadow {
+  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.34);
+}
+
+.construct-frame {
+  position: relative;
+  border: 1px solid rgba(231, 223, 207, 0.16);
+  background:
+    linear-gradient(135deg, rgba(159, 40, 31, 0.16), transparent 26%),
+    linear-gradient(90deg, rgba(231, 223, 207, 0.055), rgba(231, 223, 207, 0.015)),
+    #151519;
+}
+
+.construct-frame::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 12px;
+  background: #9f281f;
+}
+
+.construct-frame::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -1px;
+  width: 34%;
+  height: 34%;
+  background: linear-gradient(135deg, transparent 0 48%, rgba(181, 154, 84, 0.34) 49% 52%, transparent 53%);
+  opacity: 0.9;
+}
+
+.monument-label {
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.red-rule {
+  height: 8px;
+  width: 86px;
+  background: #9f281f;
+  box-shadow: 42px 0 0 #b59a54;
+}
+
+.mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.stencil {
+  font-family: "Big Shoulders Stencil Display", "Arial Narrow", Impact, sans-serif;
+}
+
+.shoulders {
+  font-family: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+}
+
+.archive-strip {
+  border-bottom: 1px solid rgba(231, 223, 207, 0.07);
+  background: rgba(20, 16, 14, 0.72);
+  color: #6c685e;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.poster-hero {
+  position: relative;
+  min-height: calc(100vh - 86px);
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(232, 225, 208, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 70% at 50% 110%, rgba(0, 0, 0, 0.55) 0%, transparent 60%);
+}
+
+.poster-wedge {
+  position: absolute;
+  top: -4%;
+  right: -14%;
+  width: 31%;
+  height: 44%;
+  background: #6e1a1a;
+  clip-path: polygon(35% 0, 100% 0, 100% 70%, 70% 100%, 0 28%);
+  opacity: 0.18;
+}
+
+.poster-halftone {
+  position: absolute;
+  left: 4%;
+  top: 14%;
+  width: 240px;
+  height: 240px;
+  background-image: radial-gradient(circle, #e7dfcf 1.4px, transparent 1.9px);
+  background-size: 7px 7px;
+  opacity: 0.24;
+  mask-image: radial-gradient(circle at center, black 25%, transparent 72%);
+}
+
+.poster-elevation {
+  position: absolute;
+  top: 14%;
+  right: -1%;
+  width: clamp(190px, 17vw, 300px);
+  height: 76vh;
+  color: #e7dfcf;
+  opacity: 0.032;
+  pointer-events: none;
+}
+
+.poster-headline {
+  font-family: "Big Shoulders Stencil Display", "Arial Narrow", Impact, sans-serif;
+  font-size: clamp(76px, 13vw, 188px);
+  font-weight: 900;
+  line-height: 0.84;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  text-shadow: -1px 0 0 rgba(214, 50, 50, 0.55), 1px 0 0 rgba(80, 200, 220, 0.18);
+}
+
+.poster-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #6c685e;
+  background: #14100e;
+  padding: 8px 18px;
+  box-shadow: 5px 5px 0 #8c2222;
+  color: #e7dfcf;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.poster-search {
+  display: flex;
+  width: 100%;
+  max-width: 720px;
+  border: 2px solid #e7dfcf;
+  background: rgba(20, 16, 14, 0.88);
+  box-shadow: 10px 10px 0 #6e1a1a, 11px 11px 0 1px rgba(0, 0, 0, 0.42);
+}
+
+.poster-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #e7dfcf;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  outline: none;
+  padding: 22px 18px;
+}
+
+.poster-search input::placeholder {
+  color: #6c685e;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.poster-search button {
+  background: #b48738;
+  color: #14100e;
+  font-family: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  padding: 0 32px;
+  text-transform: uppercase;
+}
+
+.procedure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(232, 225, 208, 0.12);
+  background: #14100e;
+}
+
+.procedure-card {
+  position: relative;
+  border-right: 1px solid rgba(232, 225, 208, 0.08);
+  padding: 32px 30px 30px;
+  min-height: 210px;
+  background:
+    linear-gradient(115deg, rgba(140, 34, 34, 0.24), transparent 36%),
+    #1d1815;
+}
+
+.procedure-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 4px;
+  background: #b62828;
+}
+
+.procedure-card:nth-child(1) {
+  background:
+    linear-gradient(90deg, rgba(182, 40, 40, 0.72) 0 10px, transparent 10px),
+    linear-gradient(135deg, rgba(140, 34, 34, 0.34), transparent 42%),
+    #1d1815;
+}
+
+.procedure-card:nth-child(2) {
+  background:
+    linear-gradient(90deg, rgba(180, 135, 56, 0.8) 0 10px, transparent 10px),
+    linear-gradient(135deg, rgba(180, 135, 56, 0.24), transparent 42%),
+    #161412;
+}
+
+.procedure-card:nth-child(3) {
+  background:
+    linear-gradient(90deg, rgba(232, 225, 208, 0.72) 0 10px, transparent 10px),
+    linear-gradient(135deg, rgba(232, 225, 208, 0.13), transparent 42%),
+    #0d0c0b;
+}
+
+.procedure-card:nth-child(2)::before {
+  background: #b48738;
+}
+
+.procedure-card:nth-child(3)::before {
+  background: #3a281c;
+}
+
+.procedure-title {
+  font-family: "Big Shoulders Stencil Display", "Arial Narrow", Impact, sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #e8e1d0;
+  text-shadow: 3px 0 0 rgba(140, 34, 34, 0.75);
+}
+
+@media (max-width: 900px) {
+  .procedure-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .poster-search {
+    flex-direction: column;
+  }
+
+  .poster-search button {
+    padding: 18px;
+  }
+}

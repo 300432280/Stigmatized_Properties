@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  free
+  paid
+  subscriber
+  researcher
+  admin
+}
+
+enum RecordStatus {
+  Draft
+  NeedsReview
+  NeedsLocationReview
+  Approved
+  Rejected
+  Disputed
+  Hidden
+  Archived
+}
+
+enum MainCategory {
+  PublicSafety
+  PropertyCondition
+  Supernatural
+  CommercialCivic
+  NotoriousAssociation
+}
+
+enum IncidentCategory {
+  Homicide
+  Death
+  Suicide
+  OrganizedCrime
+  GrowOpDrugLab
+  Fire
+  Flood
+  Hoarding
+  ParanormalAllegedHaunting
+  UrbanLegend
+  MajorCommercialIncident
+  NotoriousOwner
+}
+
+enum PropertyType {
+  Detached
+  SemiDetached
+  Townhouse
+  Condo
+  Apartment
+  Commercial
+  Industrial
+  Institutional
+  VacantLand
+  PublicSpace
+  Unknown
+}
+
+enum UseType {
+  Residential
+  Commercial
+  MixedUse
+  PublicInstitutional
+  Vacant
+  Unknown
+}
+
+enum ViewPrecision {
+  exact
+  building_only
+  street_block
+  area_only
+}
+
+enum ReportType {
+  single_property
+  area
+}
+
+enum ImportStatus {
+  Preview
+  Imported
+  Rejected
+}
+
+enum CorrectionType {
+  owner_review
+  correction
+  removal
+  precision_change
+}
+
+enum CorrectionStatus {
+  Open
+  Resolved
+  Rejected
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  password        String
+  role            UserRole          @default(free)
+  reportCredits   Int               @default(0)
+  acceptedTermsAt DateTime?
+  createdAt       DateTime          @default(now())
+  submissions     Submission[]
+  savedProperties SavedProperty[]
+  reports         Report[]
+  auditLogs       AuditLog[]
+  correctionRequests CorrectionRequest[]
+}
+
+model PropertyRecord {
+  id            String          @id @default(cuid())
+  address       String
+  city          String
+  province      String
+  neighborhood  String
+  latitude      Float
+  longitude     Float
+  propertyType  PropertyType    @default(Unknown)
+  useType       UseType         @default(Unknown)
+  viewPrecision ViewPrecision   @default(exact)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  incidents     Incident[]
+  savedBy       SavedProperty[]
+  reports       Report[]
+  correctionRequests CorrectionRequest[]
+
+  @@index([city, province])
+  @@index([latitude, longitude])
+}
+
+model Incident {
+  id            String           @id @default(cuid())
+  propertyId    String
+  property      PropertyRecord   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  title         String
+  mainCategory  MainCategory
+  category      IncidentCategory
+  incidentDate  DateTime?
+  incidentYear  Int
+  publicSummary String
+  internalNotes String?
+  status        RecordStatus     @default(NeedsReview)
+  sensitive     Boolean          @default(false)
+  reportAllowed Boolean          @default(true)
+  supernatural  Boolean          @default(false)
+  createdById   String?
+  updatedAt     DateTime         @updatedAt
+  sources       Source[]
+
+  @@index([status])
+  @@index([category])
+  @@index([incidentYear])
+}
+
+model Source {
+  id          String    @id @default(cuid())
+  incidentId  String
+  incident    Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  title       String
+  name        String
+  url         String
+  publishedAt DateTime?
+  retrievedAt DateTime
+
+  @@index([url])
+}
+
+model Submission {
+  id          String           @id @default(cuid())
+  submittedBy String
+  user        User             @relation(fields: [submittedBy], references: [id], onDelete: Cascade)
+  address     String
+  city        String
+  province    String
+  category    IncidentCategory
+  title       String
+  summary     String
+  sourceName  String?
+  sourceUrl   String?
+  howKnown    String?
+  status      RecordStatus     @default(NeedsReview)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([status])
+}
+
+model SavedProperty {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   PropertyRecord  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime        @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model Report {
+  id               String          @id @default(cuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId       String
+  property         PropertyRecord  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  type             ReportType
+  verificationCode String          @unique
+  generatedAt      DateTime        @default(now())
+  expiresAt        DateTime
+  snapshot         Json
+  downloadedAt     DateTime?
+
+  @@index([userId, generatedAt])
+}
+
+model ImportBatch {
+  id        String       @id @default(cuid())
+  createdBy String
+  filename  String
+  status    ImportStatus @default(Preview)
+  createdAt DateTime     @default(now())
+  warnings  Json
+}
+
+model CorrectionRequest {
+  id               String           @id @default(cuid())
+  propertyId        String
+  property          PropertyRecord   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  submittedBy       String
+  user              User             @relation(fields: [submittedBy], references: [id], onDelete: Cascade)
+  requestType       CorrectionType
+  message           String
+  proofDescription  String?
+  status            CorrectionStatus @default(Open)
+  createdAt         DateTime         @default(now())
+
+  @@index([status])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String?
+  createdAt  DateTime @default(now())
+  metadata   Json?
+
+  @@index([action])
+  @@index([createdAt])
+}
