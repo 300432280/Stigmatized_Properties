@@ -10,7 +10,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:add-east-toronto": "tsx prisma/add-east-toronto-records.ts"
+    "db:add-east-toronto": "tsx prisma/add-east-toronto-records.ts",
+    "db:add-tps-homicides": "tsx prisma/add-toronto-tps-homicide-records.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
